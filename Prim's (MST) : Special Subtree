@@ -1,0 +1,98 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.regex.*;
+class PqComparator implements Comparator<Node>{
+    public int compare(Node a1,Node a2)
+    {
+        return a1.weight-a2.weight;
+    }
+}
+class Node{
+    int v;
+    int weight;
+    public Node(int d,int w)
+    {
+    
+        v=d;
+        weight=w;
+    }
+}
+public class Solution {
+
+    // Complete the prims function below.
+    static int prims(int n, int[][] edges, int start) {
+        ArrayList<ArrayList<Node>> ar=new ArrayList<ArrayList<Node>>();
+            for(int i=0;i<=n;i++)
+                ar.add(i,new ArrayList<Node>());
+             for(int i=0;i<edges.length;i++)
+             {
+                    int src=edges[i][0];
+                    int des=edges[i][1];
+                    int wt=edges[i][2];
+                    ar.get(src).add(new Node(des,wt));
+                    ar.get(des).add(new Node(src,wt));
+             }
+             boolean visited[]=new boolean[n+1];
+             int vv=n;
+             int tot=0;
+             PriorityQueue<Node> pq=new PriorityQueue<Node>(new PqComparator());
+             pq.add(new Node(start,0));
+             while(pq.size()>0 && vv>0)
+             {
+                 Node x=pq.poll();
+                 if(!visited[x.v])
+                 {
+                     visited[x.v]=true;
+                     vv-=1;
+                     tot+=x.weight;
+                    for(int i=0;i<ar.get(x.v).size();i++)
+                    {
+                         Node p=ar.get(x.v).get(i);
+                         if(!visited[p.v])
+                            pq.add(p);
+                     }
+                 }
+             }
+             return tot;
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        String[] nm = scanner.nextLine().split(" ");
+
+        int n = Integer.parseInt(nm[0]);
+
+        int m = Integer.parseInt(nm[1]);
+
+        int[][] edges = new int[m][3];
+
+        for (int i = 0; i < m; i++) {
+            String[] edgesRowItems = scanner.nextLine().split(" ");
+            scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
+
+            for (int j = 0; j < 3; j++) {
+                int edgesItem = Integer.parseInt(edgesRowItems[j]);
+                edges[i][j] = edgesItem;
+            }
+        }
+
+        int start = scanner.nextInt();
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
+
+        int result = prims(n, edges, start);
+
+        bufferedWriter.write(String.valueOf(result));
+        bufferedWriter.newLine();
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
